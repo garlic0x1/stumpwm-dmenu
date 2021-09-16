@@ -1,13 +1,14 @@
-(in-package #:stumpwm)
+(in-package #:dmenu)
 
-(defvar *dmenu-position* :top)
+(defvar *dmenu-position* :bottom)
 (defvar *dmenu-fast-p* t)
 (defvar *dmenu-case-sensitive-p* nil)
 (defvar *dmenu-font* nil)
 (defvar *dmenu-background-color* nil)
 (defvar *dmenu-foreground-color* nil)
+
 (defvar *dmenu-selected-background-color* nil)
-(defvar *dmenu-max-vertical-lines* 10)
+(defvar *dmenu-max-vertical-lines* 20)
 
 (defun dmenu-build-cmd-options ()
   (format nil " ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~]"
@@ -26,7 +27,7 @@
                       cmd-options
                       prompt
                       vertical-lines))
-         (selection (run-shell-command cmd t)))
+         (selection (stumpwm::run-shell-command cmd t)))
     (when (not (equal selection ""))
       (string-trim '(#\Newline) selection))))
 
@@ -38,7 +39,7 @@
 ;; https://gist.github.com/scottjad/5262930
 (defun select-from-menu (screen table &optional prompt (initial-selection 0))
   (declare (ignore screen initial-selection))
-  (let* ((menu-options (mapcar #'menu-element-name table))
+  (let* ((menu-options (mapcar #'stumpwm::menu-element-name table))
          (menu-length (length menu-options))
          (selection-string (dmenu
                             :item-list menu-options
@@ -51,29 +52,32 @@
         (assoc selection table)
         selection)))
 
-(defcommand dmenu-call-command () ()
+(stumpwm:defcommand dmenu-call-command () ()
   "Uses dmenu to call a Stumpwm command"
-  (let ((selection (dmenu :item-list (all-commands) :prompt "Commands:")))
-    (when selection (run-commands selection))))
+  (let ((selection (dmenu :item-list (stumpwm::all-commands) :prompt "Commands:")))
+    (when selection (stumpwm:run-commands selection))))
 
-(defcommand dmenu-eval-lisp () ()
+(stumpwm:defcommand dmenu-eval-lisp () ()
   "Uses dmenu to eval a Lisp expression"
   (let ((selection (dmenu :prompt "Eval: ")))
     (when selection (eval (read-from-string selection)))))
 
-(defcommand dmenu-windowlist () ()
+(stumpwm:defcommand dmenu-windowlist () ()
   "Uses dmenu to change the visible window"
   (labels ((get-window (window-name)
-             (loop for w in (all-windows) do
-                  (when (equal (window-title w) window-name) (return w)))))
-    (let* ((open-windows (mapcar #'window-name (all-windows)))
+             (loop for w in (stumpwm::all-windows) do
+		      (when (equal (stumpwm::window-title w) window-name) (return w)))))
+    (let* ((open-windows (mapcar #'stumpwm::window-name (stumpwm::all-windows)))
            (num-of-windows (length open-windows))
            (selection (dmenu
                        :item-list open-windows
                        :prompt "Choose a window:"
                        :vertical-lines (dmenu-calc-vertica-lines num-of-windows))))
-      (when selection (focus-window (get-window selection))))))
+      (alexandria:when-let* ((window (get-window selection))
+			     (group (stumpwm::window-group window)))
+	(stumpwm::switch-to-group group)
+	(stumpwm::focus-window window)))))
 
-(defcommand dmenu-run () ()
+(stumpwm:defcommand dmenu-run () ()
   "Just a simple wrapper to call dmenu_run from lisp"
-  (run-shell-command (format nil "dmenu_run ~A -p Run: " (dmenu-build-cmd-options))))
+  (stumpwm:run-shell-command (format nil "dmenu_run ~A -p Run: " (dmenu-build-cmd-options))))
