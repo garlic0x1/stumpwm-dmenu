@@ -76,8 +76,8 @@
       (alexandria:when-let* ((window (get-window selection))
 			     (group (stumpwm::window-group window)))
 	(stumpwm::switch-to-group group)
-	(stumpwm::focus-window window)
-	(stumpwm::focus-frame group (stumpwm::window-frame window))))))
+	(stumpwm::focus-frame group (stumpwm::window-frame window))
+	(stumpwm::group-focus-window group window)))))
 
 (stumpwm:defcommand dmenu-run () ()
   "Just a simple wrapper to call dmenu_run from lisp"
