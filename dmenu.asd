@@ -1,4 +1,3 @@
-;;;; stumptray.asd
 (asdf:defsystem #:dmenu			
   :serial t
   :description "Dmenu wrapper"
