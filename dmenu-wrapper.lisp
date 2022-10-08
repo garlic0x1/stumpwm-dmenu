@@ -69,8 +69,8 @@
 (stumpwm:defcommand dmenu-windowlist () ()
   "Uses dmenu to change the visible window"
   (labels ((get-window (window-name)
-             (loop for w in (stumpwm::all-windows) do
-		      (when (equal (stumpwm::window-title w) window-name) (return w)))))
+	     (find window-name (stumpwm::all-windows)
+		   :key #'stumpwm::window-title :test #'equal)))
     (let* ((open-windows (mapcar #'stumpwm::window-name (stumpwm::all-windows)))
            (num-of-windows (length open-windows))
            (selection (dmenu
