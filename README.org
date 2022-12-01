@@ -1,0 +1,61 @@
+* Stumpwm dmenu integration
+
+This is a Stumpwm extension that allows to configure and call [[https://tools.suckless.org/dmenu/][dmenu]] from lisp code.
+
+** Install
+dmenu it's require to be available in the system and in the path, this command should work.
+
+#+BEGIN_SRC sh
+dmenu --help
+#+END_SRC
+
+It's recommended to use [[https://www.quicklisp.org/beta/][quicklisp]] to fetch the dependencies, aside from stumpwm, it also depends on:
+   - alexandria
+
+Once all the dependencies are in place, you can put this folder in a stumpwm modules location
+and it will take care of the rest.
+   
+** Usage
+It comes with a few usefull commands:
+- dmenu-call-command
+
+  Uses dmenu to call a Stumpwm command
+
+- dmenu-eval-lisp
+
+  Uses dmenu to eval a Lisp expression
+
+- dmenu-windowlist
+
+  Uses dmenu to change the visible window
+  
+- dmenu-run
+
+  Just a simple wrapper to call dmenu_run from lisp
+
+
+** Variables
+
+The following variables are provided
+
+#+BEGIN_SRC lisp
+
+*dmenu-position*
+;; If set to :bottom, dmenu will appear in the bottom of the screen ...
+
+*dmenu-fast-p*
+;; If true ,dmenu grabs the keyboard before reading stdin.  This is faster, but will lock up X until stdin reaches end-of-file.
+
+*dmenu-case-sensitive-p*
+
+*dmenu-font*
+
+*dmenu-background-color*
+
+*dmenu-foreground-color*
+
+*selected-background-color*
+
+*dmenu-max-vertical-lines*
+
+#+END_SRC
