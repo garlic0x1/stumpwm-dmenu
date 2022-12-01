@@ -3,9 +3,7 @@
   :description "Dmenu wrapper"
   :author "Fermin MF"
   :license "GPLv3"
-  :depends-on (#:stumpwm
-               #:xembed
-               #:alexandria)
+  :depends-on (#:stumpwm #:alexandria)
   :components ((:file "package")
                (:file "dmenu-wrapper")))
 
