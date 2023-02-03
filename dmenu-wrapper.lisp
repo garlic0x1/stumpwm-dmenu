@@ -21,10 +21,13 @@
           (when *dmenu-foreground-color* (format nil "-nf ~A" *dmenu-foreground-color*))
           (when *dmenu-selected-background-color* (format nil "-sb ~A" *dmenu-selected-background-color*))))
 
-(defun dmenu (&key item-list prompt vertical-lines (cmd-options (dmenu-build-cmd-options)))
+(defun dmenu (&key (item-list "") prompt vertical-lines (cmd-options (dmenu-build-cmd-options)))
   (let* ((cmd (format nil
                       "printf ~A | dmenu~A ~@[-p \"~A\"~] ~@[-l \"~A\"~]"
-                      (if item-list (format nil "\"~{~A\\n~}\"" item-list) "")
+                      (format nil (prin1-to-string "~{~A\\n~}")
+			      (mapcar (lambda (i)
+					(remove #\" i))
+				      item-list))
                       cmd-options
                       prompt
                       vertical-lines))
