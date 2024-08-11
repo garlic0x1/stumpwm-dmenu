@@ -8,26 +8,28 @@
 (defvar *dmenu-foreground-color* nil)
 
 (defvar *dmenu-selected-background-color* nil)
+(defvar *dmenu-selected-foreground-color* nil)
 (defvar *dmenu-max-vertical-lines* 20)
 
 (defun dmenu-build-cmd-options ()
-  (format nil " ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~]"
+  (format nil " ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~] ~@[~A~]"
           (when (equal *dmenu-position* :bottom) "-b")
-	  ;;(format nil "-m ~A" 1)
+          ;;(format nil "-m ~A" 1)
           (when *dmenu-fast-p* "-f")
           (when (not *dmenu-case-sensitive-p*) "-i")
-	  (when *dmenu-font* (format nil "-fn ~A" *dmenu-font*))
+          (when *dmenu-font* (format nil "-fn ~A" *dmenu-font*))
           (when *dmenu-background-color* (format nil "-nb ~A" *dmenu-background-color*))
           (when *dmenu-foreground-color* (format nil "-nf ~A" *dmenu-foreground-color*))
-          (when *dmenu-selected-background-color* (format nil "-sb ~A" *dmenu-selected-background-color*))))
+          (when *dmenu-selected-background-color* (format nil "-sb ~A" *dmenu-selected-background-color*))
+          (when *dmenu-selected-foreground-color* (format nil "-sf ~A" *dmenu-selected-foreground-color*))))
 
 (defun dmenu (&key (item-list "") prompt vertical-lines (cmd-options (dmenu-build-cmd-options)))
   (let* ((cmd (format nil
                       "printf ~A | dmenu~A ~@[-p \"~A\"~] ~@[-l \"~A\"~]"
                       (format nil (prin1-to-string "~{~A\\n~}")
-			      (mapcar (lambda (i)
-					(remove #\" i))
-				      item-list))
+                              (mapcar (lambda (i)
+                                        (remove #\" i))
+                                      item-list))
                       cmd-options
                       prompt
                       vertical-lines))
@@ -72,8 +74,8 @@
 (stumpwm:defcommand dmenu-windowlist () ()
   "Uses dmenu to change the visible window"
   (labels ((get-window (window-name)
-	     (find window-name (stumpwm::all-windows)
-		   :key #'stumpwm::window-title :test #'equal)))
+             (find window-name (stumpwm::all-windows)
+                   :key #'stumpwm::window-title :test #'equal)))
     (let* ((open-windows (mapcar #'stumpwm::window-name (stumpwm::all-windows)))
            (num-of-windows (length open-windows))
            (selection (dmenu
@@ -81,10 +83,10 @@
                        :prompt "Choose a window:"
                        :vertical-lines (dmenu-calc-vertica-lines num-of-windows))))
       (alexandria:when-let* ((window (get-window selection))
-			     (group (stumpwm::window-group window)))
-	(stumpwm::switch-to-group group)
-	(stumpwm::focus-frame group (stumpwm::window-frame window))
-	(stumpwm::group-focus-window group window)))))
+                             (group (stumpwm::window-group window)))
+        (stumpwm::switch-to-group group)
+        (stumpwm::focus-frame group (stumpwm::window-frame window))
+        (stumpwm::group-focus-window group window)))))
 
 (stumpwm:defcommand dmenu-run () ()
   "Just a simple wrapper to call dmenu_run from lisp"
